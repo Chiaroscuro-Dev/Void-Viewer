@@ -27,6 +27,14 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* Disclaimer style */
+.disclaimer {
+    color: #d1d1d6;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
 .repository-section {
     margin-bottom: 30px;
     background-color: #2c2c2e;
@@ -42,6 +50,7 @@ h2 {
 
 .app-card {
     display: flex;
+    align-items: center; /* Align content vertically */
     margin-bottom: 20px;
     padding: 15px;
     background-color: #3a3a3c;
@@ -49,53 +58,59 @@ h2 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
-/* Disclaimer style */
-.disclaimer {
-    color: #d1d1d6;
-    font-size: 0.9em;
-    margin-bottom: 20px;
-    font-style: italic;
+.app-card img {
+    width: 80px;  /* Fixed size for uniform app icons */
+    height: 80px;  /* Fixed size for uniform app icons */
+    object-fit: cover;  /* Ensures the image fits into the box without distortion */
+    margin-right: 15px;
+    border-radius: 15%;
 }
 
-input[type="text"], select {
-    width: 80%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 15px;
-    border: none;
-    background-color: #3a3a3c;
-    color: #f4f4f9;
-    font-size: 1em;
-}
-
-button {
-    padding: 12px;
-    margin: 10px 0;
-    background-color: #007bff;
-    color: white;
-    border-radius: 15px;
-    border: none;
-    font-size: 1em;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-#appDisplay {
-    margin-top: 30px;
+.app-details {
+    flex: 1;
     text-align: left;
 }
 
-.app-card {
-    display: flex;
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #3a3a3c;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.app-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #007bff;
 }
 
-/* Additional styling for the app card, icons, etc. remains the same... */
+.app-subtitle, .app-developer, .app-category, .app-version {
+    font-size: 0.9em;
+    color: #a1a1a3;
+    margin-top: 5px;
+}
+
+.download-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+}
+
+.download-link:hover {
+    background-color: #218838;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .app-card {
+        flex-direction: column;  /* Stack app details vertically */
+        align-items: flex-start;  /* Align content to the left on smaller screens */
+    }
+
+    .app-card img {
+        margin-bottom: 10px;  /* Add space between the image and details */
+    }
+
+    .app-details {
+        text-align: left;  /* Align text left for mobile view */
+        width: 100%;
+    }
+}
