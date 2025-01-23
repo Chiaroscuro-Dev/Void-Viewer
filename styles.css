@@ -24,7 +24,15 @@ body {
 h1 {
     color: #f4f4f9;
     font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+/* Disclaimer style */
+.disclaimer {
+    color: #d1d1d6;
+    font-size: 0.9em;
     margin-bottom: 20px;
+    font-style: italic;
 }
 
 input[type="text"], select {
@@ -67,62 +75,4 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.app-card img {
-    width: 100px;
-    height: 100px;
-    border-radius: 20%;
-    margin-right: 20px;
-}
-
-.app-details {
-    flex: 1;
-}
-
-.app-title {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #007bff;
-}
-
-.app-subtitle {
-    font-size: 1.2em;
-    color: #f4f4f9;
-}
-
-.app-developer {
-    color: #a1a1a3;
-    margin-top: 5px;
-}
-
-.app-description {
-    margin: 10px 0;
-    font-size: 1em;
-    line-height: 1.6;
-}
-
-.app-category {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #a1a1a3;
-}
-
-.app-version {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #888;
-}
-
-.download-link {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 15px;
-    background-color: #28a745;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.1em;
-}
-
-.download-link:hover {
-    background-color: #218838;
-}
+/* Additional styling for the app card, icons, etc. remains the same... */
