@@ -18,10 +18,15 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     }
 });
 
+// Use CORS proxy to load JSON from external URLs that have CORS restrictions
 document.getElementById('loadFromUrl').addEventListener('click', function() {
     const url = document.getElementById('urlInput').value;
     if (url) {
-        fetch(url)
+        // Use a CORS proxy to bypass CORS restrictions
+        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+        const proxyUrl = corsProxy + url;
+
+        fetch(proxyUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
