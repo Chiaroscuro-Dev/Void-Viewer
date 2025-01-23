@@ -5,9 +5,9 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     reader.onload = function(e) {
         try {
             const jsonData = JSON.parse(e.target.result);
-            handleJsonData(jsonData);  // Updated function to handle various structures
+            handleJsonData(jsonData);  // Handles both single and multiple apps
         } catch (error) {
-            console.error('Invalid JSON file!');
+            console.error('Invalid JSON file!', error);
         }
     };
 
@@ -27,7 +27,7 @@ document.getElementById('loadFromUrl').addEventListener('click', function() {
                 return response.json();
             })
             .then(data => {
-                handleJsonData(data);  // Updated function to handle various structures
+                handleJsonData(data);  // Handles both single and multiple apps
             })
             .catch(error => {
                 console.error('Error fetching JSON:', error);
@@ -39,18 +39,21 @@ function handleJsonData(data) {
     const appDisplay = document.getElementById('appDisplay');
     appDisplay.innerHTML = '';  // Clear previous content
 
-    // Check if the data is an array of apps (multiple apps case)
+    // Handle case where data is an array (multiple apps)
     if (Array.isArray(data)) {
         data.forEach(app => {
             createAppCard(app, appDisplay);
         });
-    } else if (data.versions) {
-        // If there's a `versions` key, loop through the versions (multiple app versions case)
+    } 
+    // Handle case where there's a single app object with versions
+    else if (data.versions && Array.isArray(data.versions)) {
+        // Display each version as a separate card
         data.versions.forEach(version => {
-            createAppCard({ ...data, ...version }, appDisplay);
+            createAppCard({ ...data, ...version }, appDisplay);  // Merge app metadata with version details
         });
-    } else {
-        // If it's a single app object
+    } 
+    // Handle single app with no versions
+    else {
         createAppCard(data, appDisplay);
     }
 }
