@@ -1,30 +1,30 @@
-const repositoryUrls = [
-    'https://raw.githubusercontent.com/Gliddd4/MyApps/refs/heads/main/app-repo.json',
-    'https://qnblackcat.github.io/AltStore/apps.json',
-    'https://randomblock1.com/altstore/apps.json',
-    'https://ipa.cypwn.xyz/cypwn.json',
-    'https://raw.githubusercontent.com/vizunchik/AltStoreRus/master/apps.json',
-    'https://burritosoftware.github.io/altstore/channels/burritosource.json',
-    'https://wuxu1.github.io/wuxu-complete.json',
-    'https://wuxu1.github.io/wuxu-complete-plus.json',
-    'https://hann8n.github.io/JackCracks/MovieboxPro.json',
-    'https://raw.githubusercontent.com/swaggyP36000/TrollStore-IPAs/main/apps_esign.json',
-    'https://flyinghead.github.io/flycast-builds/altstore.json',
-    'https://github.com/khcrysalis/Feather/raw/main/app-repo.json',
-    'https://quarksources.github.io/quantumsource++.json',
-    'https://repo.starfiles.co/',
-    'https://altstore.oatmealdome.me/',
-    'https://raw.githubusercontent.com/Neoncat-OG/TrollStore-IPAs/main/apps_esign.json',
-    'https://raw.githubusercontent.com/Balackburn/YTLitePlusAltstore/main/apps.json',
-    'https://raw.githubusercontent.com/TheNightmanCodeth/chromium-ios/master/altstore-source.json',
-    'https://raw.githubusercontent.com/arichornloverALT/arichornloveralt.github.io/main/apps2.json',
-    'https://raw.githubusercontent.com/lo-cafe/winston-altstore/main/apps.json'
-];
+let allRepositories = [];  // Global array to store multiple repositories
 
-let allRepositories = [];  // Store repository apps
-
-// Load multiple repositories and handle CORS-free sources only
+// Function to preload repositories
 function preloadRepositories() {
+    const repositoryUrls = [
+        'https://raw.githubusercontent.com/Gliddd4/MyApps/refs/heads/main/app-repo.json',
+        'https://qnblackcat.github.io/AltStore/apps.json',
+        'https://randomblock1.com/altstore/apps.json',
+        'https://ipa.cypwn.xyz/cypwn.json',
+        'https://raw.githubusercontent.com/vizunchik/AltStoreRus/master/apps.json',
+        'https://burritosoftware.github.io/altstore/channels/burritosource.json',
+        'https://wuxu1.github.io/wuxu-complete.json',
+        'https://wuxu1.github.io/wuxu-complete-plus.json',
+        'https://hann8n.github.io/JackCracks/MovieboxPro.json',
+        'https://raw.githubusercontent.com/swaggyP36000/TrollStore-IPAs/main/apps_esign.json',
+        'https://flyinghead.github.io/flycast-builds/altstore.json',
+        'https://github.com/khcrysalis/Feather/raw/main/app-repo.json',
+        'https://quarksources.github.io/quantumsource++.json',
+        'https://repo.starfiles.co/',
+        'https://altstore.oatmealdome.me/',
+        'https://raw.githubusercontent.com/Neoncat-OG/TrollStore-IPAs/main/apps_esign.json',
+        'https://raw.githubusercontent.com/Balackburn/YTLitePlusAltstore/main/apps.json',
+        'https://raw.githubusercontent.com/TheNightmanCodeth/chromium-ios/master/altstore-source.json',
+        'https://raw.githubusercontent.com/arichornloverALT/arichornloveralt.github.io/main/apps2.json',
+        'https://raw.githubusercontent.com/lo-cafe/winston-altstore/main/apps.json'
+    ];
+
     repositoryUrls.forEach(url => {
         fetch(url)
             .then(response => {
@@ -35,9 +35,9 @@ function preloadRepositories() {
             })
             .then(data => {
                 const repoName = extractRepoNameFromURL(url);
-                const apps = data.apps || [];  // Check if there's an "apps" array
+                const apps = data.apps || [];
                 allRepositories.push({ name: repoName, apps });
-                displayRepository(repoName, apps);  // Display apps in this repo
+                createRepositoryDropdown(repoName, apps);  // Create a dropdown for each repo
             })
             .catch(error => {
                 console.warn(`Skipping ${url}: ${error.message}`);
@@ -51,22 +51,32 @@ function extractRepoNameFromURL(url) {
     return parts[parts.length - 1].replace('.json', '') || 'Unknown Repo';
 }
 
-// Display repository section with apps as subsections
-function displayRepository(repoName, apps) {
+// Create a dropdown section for each repository
+function createRepositoryDropdown(repoName, apps) {
     const container = document.getElementById('appDisplay');
 
     const repoSection = document.createElement('div');
     repoSection.classList.add('repository-section');
-    
+
     const repoTitle = document.createElement('h2');
     repoTitle.textContent = `Repository: ${repoName}`;
-    repoSection.appendChild(repoTitle);
+    repoTitle.classList.add('repo-title');
+    repoTitle.addEventListener('click', function() {
+        const appList = repoSection.querySelector('.app-list');
+        appList.style.display = appList.style.display === 'none' ? 'block' : 'none';  // Toggle app list visibility
+    });
+
+    const appList = document.createElement('div');
+    appList.classList.add('app-list');
+    appList.style.display = 'none';  // Hide apps by default
 
     apps.forEach(app => {
         const appCard = createAppCard(app);
-        repoSection.appendChild(appCard);
+        appList.appendChild(appCard);
     });
 
+    repoSection.appendChild(repoTitle);
+    repoSection.appendChild(appList);
     container.appendChild(repoSection);
 }
 
@@ -115,6 +125,24 @@ function createAppCard(app) {
 
     appCard.appendChild(appDetails);
     return appCard;
+}
+
+// Search apps by name across all repositories
+document.getElementById('searchButton').addEventListener('click', function() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    searchApps(searchTerm);
+});
+
+function searchApps(searchTerm) {
+    const appDisplay = document.getElementById('appDisplay');
+    appDisplay.innerHTML = '';  // Clear previous content
+
+    allRepositories.forEach(repo => {
+        const filteredApps = repo.apps.filter(app => app.name.toLowerCase().includes(searchTerm));
+        if (filteredApps.length > 0) {
+            createRepositoryDropdown(repo.name, filteredApps);  // Show the filtered apps under their respective repo
+        }
+    });
 }
 
 // Load repositories on page load
