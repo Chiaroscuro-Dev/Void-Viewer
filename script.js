@@ -1,29 +1,32 @@
 let allRepositories = [];  // Global array to store multiple repositories
 
 // Function to preload repositories
-function preloadRepositories() {
-    const repositoryUrls = [
-        'https://raw.githubusercontent.com/Gliddd4/MyApps/refs/heads/main/app-repo.json',
-        'https://qnblackcat.github.io/AltStore/apps.json',
-        'https://randomblock1.com/altstore/apps.json',
-        'https://ipa.cypwn.xyz/cypwn.json',
-        'https://raw.githubusercontent.com/vizunchik/AltStoreRus/master/apps.json',
-        'https://burritosoftware.github.io/altstore/channels/burritosource.json',
-        'https://wuxu1.github.io/wuxu-complete.json',
-        'https://wuxu1.github.io/wuxu-complete-plus.json',
-        'https://hann8n.github.io/JackCracks/MovieboxPro.json',
-        'https://raw.githubusercontent.com/swaggyP36000/TrollStore-IPAs/main/apps_esign.json',
-        'https://flyinghead.github.io/flycast-builds/altstore.json',
-        'https://github.com/khcrysalis/Feather/raw/main/app-repo.json',
-        'https://quarksources.github.io/quantumsource++.json',
-        'https://repo.starfiles.co/',
-        'https://altstore.oatmealdome.me/',
-        'https://raw.githubusercontent.com/Neoncat-OG/TrollStore-IPAs/main/apps_esign.json',
-        'https://raw.githubusercontent.com/Balackburn/YTLitePlusAltstore/main/apps.json',
-        'https://raw.githubusercontent.com/TheNightmanCodeth/chromium-ios/master/altstore-source.json',
-        'https://raw.githubusercontent.com/arichornloverALT/arichornloveralt.github.io/main/apps2.json',
-        'https://raw.githubusercontent.com/lo-cafe/winston-altstore/main/apps.json'
+    const customRepoNames = [
+        'https://raw.githubusercontent.com/Gliddd4/MyApps/refs/heads/main/app-repo.json': 'MyApps by Gliddd4',
+        'https://qnblackcat.github.io/AltStore/apps.json': 'qnblackcat's AltStore',
+        'https://randomblock1.com/altstore/apps.json': 'randomblock1's AltStore',
+        'https://ipa.cypwn.xyz/cypwn.json': 'CyPwn',
+        'https://raw.githubusercontent.com/vizunchik/AltStoreRus/master/apps.json': 'vizunchik's AltStoreRus',
+        'https://burritosoftware.github.io/altstore/channels/burritosource.json': 'burritosoftware's AltStore',
+        'https://wuxu1.github.io/wuxu-complete.json': 'wuxu1 Complete',
+        'https://wuxu1.github.io/wuxu-complete-plus.json': 'wuxu1 Complete Plus',
+        'https://hann8n.github.io/JackCracks/MovieboxPro.json': 'JackCracks MovieboxPro',
+        'https://raw.githubusercontent.com/swaggyP36000/TrollStore-IPAs/main/apps_esign.json': 'TrollStore IPA’s',
+        'https://flyinghead.github.io/flycast-builds/altstore.json': 'flyinghead's Flycast',
+        'https://github.com/khcrysalis/Feather/raw/main/app-repo.json': 'Feather by khcrysalis',
+        'https://quarksources.github.io/quantumsource++.json': ' quantumsource++ by quarksources',
+        'https://repo.starfiles.co/': 'Starfiles',
+        'https://altstore.oatmealdome.me/': 'AltStore',
+        'https://raw.githubusercontent.com/Neoncat-OG/TrollStore-IPAs/main/apps_esign.json': 'Neoncat-OG’s TrollStore IPA’s'
+        'https://raw.githubusercontent.com/Balackburn/YTLitePlusAltstore/main/apps.json': 'YTLitePlus by Balackburn',
+        'https://raw.githubusercontent.com/TheNightmanCodeth/chromium-ios/master/altstore-source.json': 'Chromium by TheNightManCodeth'
+        'https://raw.githubusercontent.com/arichornloverALT/arichornloveralt.github.io/main/apps2.json': 'arichornloveralt’s Apps',
+        'https://raw.githubusercontent.com/lo-cafe/winston-altstore/main/apps.json': 'Winston by lo-cafe'
     ];
+
+    // Function to preload repositories
+function preloadRepositories() {
+    const repositoryUrls = Object.keys(customRepoNames);  // Only use repos with custom names defined
 
     repositoryUrls.forEach(url => {
         fetch(url)
@@ -34,7 +37,7 @@ function preloadRepositories() {
                 return response.json();
             })
             .then(data => {
-                const repoName = extractRepoNameFromURL(url);
+                const repoName = getCustomRepoName(url);
                 const apps = data.apps || [];
                 allRepositories.push({ name: repoName, apps });
                 createRepositoryDropdown(repoName, apps);  // Create a dropdown for each repo
@@ -45,7 +48,12 @@ function preloadRepositories() {
     });
 }
 
-// Extract repository name from the URL
+// Get custom repository name if available, otherwise extract from URL
+function getCustomRepoName(url) {
+    return customRepoNames[url] || extractRepoNameFromURL(url);
+}
+
+// Extract repository name from the URL if no custom name is provided
 function extractRepoNameFromURL(url) {
     const parts = url.split('/');
     return parts[parts.length - 1].replace('.json', '') || 'Unknown Repo';
