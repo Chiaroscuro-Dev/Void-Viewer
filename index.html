@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Viewer</title>
+    <title>App Store Style JSON Viewer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Repository Viewer</h1>
+        <h1>JSON App Viewer</h1>
 
-        <!-- URL Input to load JSON from a link -->
+        <!-- Input for loading JSON from URL -->
         <input type="text" id="urlInput" placeholder="Enter raw JSON file link" />
         <button id="loadFromUrl">Load JSON from URL</button>
 
-        <!-- File Upload Input -->
+        <!-- File input for uploading a JSON file -->
         <input type="file" id="fileInput" accept=".json" />
-        
-        <div id="viewer">
-            <pre id="jsonDisplay">Upload a JSON repository or insert a URL to view it here.</pre>
-        </div>
 
-        <!-- Download section for .ipa files -->
-        <div id="downloadSection" style="display: none;">
-            <h2>Download .ipa Files</h2>
-            <div id="ipaFiles"></div>
+        <!-- App Display Section -->
+        <div id="appDisplay">
+            <!-- JSON data will be dynamically displayed here -->
         </div>
     </div>
 
