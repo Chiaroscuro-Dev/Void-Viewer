@@ -24,9 +24,9 @@ let allRepositories = [];  // Global array to store multiple repositories
         'https://raw.githubusercontent.com/lo-cafe/winston-altstore/main/apps.json': 'Winston by lo-cafe'
     ];
 
-    // Function to preload repositories
+// Function to preload repositories
 function preloadRepositories() {
-    const repositoryUrls = Object.keys(customRepoNames);  // Only use repos with custom names defined
+    const repositoryUrls = Object.keys(customRepoNames);  // Get all repository URLs from the customRepoNames map
 
     repositoryUrls.forEach(url => {
         fetch(url)
@@ -34,11 +34,11 @@ function preloadRepositories() {
                 if (!response.ok) {
                     throw new Error(`Failed to load repository: ${url}`);
                 }
-                return response.json();
+                return response.json();  // Parse the JSON data
             })
             .then(data => {
                 const repoName = getCustomRepoName(url);
-                const apps = data.apps || [];
+                const apps = data.apps || [];  // Check if there's an "apps" array in the JSON
                 allRepositories.push({ name: repoName, apps });
                 createRepositoryDropdown(repoName, apps);  // Create a dropdown for each repo
             })
@@ -50,7 +50,7 @@ function preloadRepositories() {
 
 // Get custom repository name if available, otherwise extract from URL
 function getCustomRepoName(url) {
-    return customRepoNames[url] || extractRepoNameFromURL(url);
+    return customRepoNames[url] || extractRepoNameFromURL(url);  // Use custom name or fallback to URL extraction
 }
 
 // Extract repository name from the URL if no custom name is provided
