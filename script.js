@@ -1,13 +1,16 @@
-let jsonData = [];  // Global variable to store loaded JSON data
+let allRepositories = [];  // Global array to store multiple repositories
 
+// Function to load a repository from a file
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
 
     reader.onload = function(e) {
         try {
-            jsonData = JSON.parse(e.target.result);
-            processRepository(jsonData);  // Process the JSON repository
+            const jsonData = JSON.parse(e.target.result);
+            allRepositories.push({ name: file.name, apps: jsonData.apps || [] });
+            displayApps(getAllApps());
+            populateCategoryFilter();
         } catch (error) {
             console.error('Invalid JSON file!', error);
         }
@@ -18,24 +21,20 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     }
 });
 
-// Use CORS proxy to load JSON from external URLs that have CORS restrictions
+// Function to load a repository from a URL using CORS proxy
 document.getElementById('loadFromUrl').addEventListener('click', function() {
     const url = document.getElementById('urlInput').value;
     if (url) {
-        // Use a CORS proxy to bypass CORS restrictions
-        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-        const proxyUrl = corsProxy + url;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
         fetch(proxyUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                jsonData = data;
-                processRepository(jsonData);  // Process the JSON repository
+                const jsonData = JSON.parse(data.contents);
+                const repoName = extractRepoNameFromURL(url);
+                allRepositories.push({ name: repoName, apps: jsonData.apps || [] });
+                displayApps(getAllApps());
+                populateCategoryFilter();
             })
             .catch(error => {
                 console.error('Error fetching JSON:', error);
@@ -43,41 +42,28 @@ document.getElementById('loadFromUrl').addEventListener('click', function() {
     }
 });
 
-document.getElementById('categoryFilter').addEventListener('change', function() {
-    const selectedCategory = this.value;
-    filterAppsByCategory(selectedCategory);
-});
-
-document.getElementById('searchButton').addEventListener('click', function() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    searchApps(searchTerm);
-});
-
-// Process the repository based on structure
-function processRepository(repo) {
-    let apps = [];
-
-    // Check for "apps" key in the JSON
-    if (repo.apps && Array.isArray(repo.apps)) {
-        apps = repo.apps;
-    } else {
-        console.error('Invalid repository structure.');
-        return;
-    }
-
-    displayApps(apps);
-    populateCategoryFilter(apps);
+// Extract repository name from the URL
+function extractRepoNameFromURL(url) {
+    const parts = url.split('/');
+    return parts[parts.length - 1] || 'Unknown Repo';
 }
 
+// Function to get all apps from all loaded repositories
+function getAllApps() {
+    return allRepositories.reduce((allApps, repo) => allApps.concat(repo.apps.map(app => ({ ...app, repoName: repo.name }))), []);
+}
+
+// Function to display all apps
 function displayApps(apps) {
     const appDisplay = document.getElementById('appDisplay');
     appDisplay.innerHTML = '';  // Clear previous content
 
     apps.forEach(app => {
-        createAppCard(app, appDisplay);  // Display each app
+        createAppCard(app, appDisplay);
     });
 }
 
+// Create an app card with repository info
 function createAppCard(app, appDisplay) {
     const appCard = document.createElement('div');
     appCard.classList.add('app-card');
@@ -114,12 +100,10 @@ function createAppCard(app, appDisplay) {
     appVersion.textContent = `Version: ${app.version || 'N/A'} (Updated: ${app.versionDate || 'Unknown Date'})`;
     appDetails.appendChild(appVersion);
 
-    if (app.screenshotURLs && app.screenshotURLs.length > 0) {
-        const screenshot = document.createElement('img');
-        screenshot.src = app.screenshotURLs[0];
-        screenshot.style.width = '100px';  // Adjust size as needed
-        appDetails.appendChild(screenshot);
-    }
+    const repoLabel = document.createElement('div');
+    repoLabel.classList.add('app-repo');
+    repoLabel.textContent = `Repository: ${app.repoName}`;
+    appDetails.appendChild(repoLabel);
 
     const downloadLink = document.createElement('a');
     downloadLink.href = app.downloadURL;
@@ -131,9 +115,11 @@ function createAppCard(app, appDisplay) {
     appDisplay.appendChild(appCard);
 }
 
-function populateCategoryFilter(apps) {
+// Populate category filter based on all loaded repositories
+function populateCategoryFilter() {
     const categoryFilter = document.getElementById('categoryFilter');
-    const categories = new Set(apps.map(app => app.category || 'Uncategorized'));
+    const allApps = getAllApps();
+    const categories = new Set(allApps.map(app => app.category || 'Uncategorized'));
     
     categoryFilter.innerHTML = '<option value="all">All Categories</option>';  // Reset options
     categories.forEach(category => {
@@ -144,12 +130,24 @@ function populateCategoryFilter(apps) {
     });
 }
 
+// Filter apps by category
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    const selectedCategory = this.value;
+    filterAppsByCategory(selectedCategory);
+});
+
 function filterAppsByCategory(category) {
-    const filteredApps = category === 'all' ? jsonData.apps : jsonData.apps.filter(app => app.category === category);
+    const filteredApps = category === 'all' ? getAllApps() : getAllApps().filter(app => app.category === category);
     displayApps(filteredApps);
 }
 
+// Search apps by name across all repositories
+document.getElementById('searchButton').addEventListener('click', function() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    searchApps(searchTerm);
+});
+
 function searchApps(searchTerm) {
-    const searchedApps = jsonData.apps.filter(app => app.name.toLowerCase().includes(searchTerm));
+    const searchedApps = getAllApps().filter(app => app.name.toLowerCase().includes(searchTerm));
     displayApps(searchedApps);
 }
