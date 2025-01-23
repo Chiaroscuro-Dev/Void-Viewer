@@ -1,11 +1,14 @@
+let jsonData = [];  // Global variable to store loaded JSON data
+
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
 
     reader.onload = function(e) {
         try {
-            const jsonData = JSON.parse(e.target.result);
-            handleJsonData(jsonData);  // Handles both single and multiple apps
+            jsonData = JSON.parse(e.target.result);
+            displayApps(jsonData.apps);  // Handles both single and multiple apps
+            populateCategoryFilter(jsonData.apps);
         } catch (error) {
             console.error('Invalid JSON file!', error);
         }
@@ -27,7 +30,9 @@ document.getElementById('loadFromUrl').addEventListener('click', function() {
                 return response.json();
             })
             .then(data => {
-                handleJsonData(data);  // Handles both single and multiple apps
+                jsonData = data;
+                displayApps(jsonData.apps);
+                populateCategoryFilter(jsonData.apps);
             })
             .catch(error => {
                 console.error('Error fetching JSON:', error);
@@ -35,19 +40,23 @@ document.getElementById('loadFromUrl').addEventListener('click', function() {
     }
 });
 
-function handleJsonData(data) {
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    const selectedCategory = this.value;
+    filterAppsByCategory(selectedCategory);
+});
+
+document.getElementById('searchButton').addEventListener('click', function() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    searchApps(searchTerm);
+});
+
+function displayApps(apps) {
     const appDisplay = document.getElementById('appDisplay');
     appDisplay.innerHTML = '';  // Clear previous content
 
-    // Check if the JSON contains an "apps" array
-    if (Array.isArray(data.apps)) {
-        data.apps.forEach(app => {
-            createAppCard(app, appDisplay);  // Display each app in the "apps" array
-        });
-    } else {
-        // If no "apps" array, check if it's just a single app object
-        createAppCard(data, appDisplay);
-    }
+    apps.forEach(app => {
+        createAppCard(app, appDisplay);  // Display each app
+    });
 }
 
 function createAppCard(app, appDisplay) {
@@ -99,4 +108,27 @@ function createAppCard(app, appDisplay) {
 
     appCard.appendChild(appDetails);
     appDisplay.appendChild(appCard);
+}
+
+function populateCategoryFilter(apps) {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const categories = new Set(apps.map(app => app.category || 'Uncategorized'));
+    
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';  // Reset options
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+    });
+}
+
+function filterAppsByCategory(category) {
+    const filteredApps = category === 'all' ? jsonData.apps : jsonData.apps.filter(app => app.category === category);
+    displayApps(filteredApps);
+}
+
+function searchApps(searchTerm) {
+    const searchedApps = jsonData.apps.filter(app => app.name.toLowerCase().includes(searchTerm));
+    displayApps(searchedApps);
 }
