@@ -42,15 +42,25 @@ h1 {
     border-radius: 10px;
 }
 
-h2 {
+h2.repo-title {
     color: #f4f4f9;
     font-size: 1.5em;
+    cursor: pointer;
     margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+h2.repo-title:hover {
+    color: #007bff;
+}
+
+.app-list {
+    padding-left: 20px;
 }
 
 .app-card {
     display: flex;
-    align-items: center; /* Align content vertically */
+    align-items: center;
     margin-bottom: 20px;
     padding: 15px;
     background-color: #3a3a3c;
@@ -101,16 +111,16 @@ h2 {
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {
     .app-card {
-        flex-direction: column;  /* Stack app details vertically */
-        align-items: flex-start;  /* Align content to the left on smaller screens */
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .app-card img {
-        margin-bottom: 10px;  /* Add space between the image and details */
+        margin-bottom: 10px;
     }
 
     .app-details {
-        text-align: left;  /* Align text left for mobile view */
+        text-align: left;
         width: 100%;
     }
 }
