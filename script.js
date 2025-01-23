@@ -43,7 +43,7 @@ function preloadRepositories() {
                 createRepositoryDropdown(repoName, apps);  // Create a dropdown for each repo
             })
             .catch(error => {
-                console.warn(`Skipping ${url}: ${error.message}`);
+                console.error(`Error fetching repository: ${url}. Error: ${error.message}`);
             });
     });
 }
