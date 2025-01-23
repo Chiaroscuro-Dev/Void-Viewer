@@ -7,8 +7,7 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     reader.onload = function(e) {
         try {
             jsonData = JSON.parse(e.target.result);
-            displayApps(jsonData.apps);  // Handles both single and multiple apps
-            populateCategoryFilter(jsonData.apps);
+            processRepository(jsonData);  // Process the JSON repository
         } catch (error) {
             console.error('Invalid JSON file!', error);
         }
@@ -31,8 +30,7 @@ document.getElementById('loadFromUrl').addEventListener('click', function() {
             })
             .then(data => {
                 jsonData = data;
-                displayApps(jsonData.apps);
-                populateCategoryFilter(jsonData.apps);
+                processRepository(jsonData);  // Process the JSON repository
             })
             .catch(error => {
                 console.error('Error fetching JSON:', error);
@@ -49,6 +47,22 @@ document.getElementById('searchButton').addEventListener('click', function() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     searchApps(searchTerm);
 });
+
+// Process the repository based on structure
+function processRepository(repo) {
+    let apps = [];
+
+    // Check for "apps" key in the JSON
+    if (repo.apps && Array.isArray(repo.apps)) {
+        apps = repo.apps;
+    } else {
+        console.error('Invalid repository structure.');
+        return;
+    }
+
+    displayApps(apps);
+    populateCategoryFilter(apps);
+}
 
 function displayApps(apps) {
     const appDisplay = document.getElementById('appDisplay');
@@ -77,18 +91,13 @@ function createAppCard(app, appDisplay) {
 
     const appSubtitle = document.createElement('div');
     appSubtitle.classList.add('app-subtitle');
-    appSubtitle.textContent = app.subtitle || 'No subtitle provided';
+    appSubtitle.textContent = app.localizedDescription || 'No description provided';
     appDetails.appendChild(appSubtitle);
 
     const appDeveloper = document.createElement('div');
     appDeveloper.classList.add('app-developer');
     appDeveloper.textContent = `By: ${app.developerName || 'Unknown Developer'}`;
     appDetails.appendChild(appDeveloper);
-
-    const appDescription = document.createElement('div');
-    appDescription.classList.add('app-description');
-    appDescription.textContent = app.description || 'No description available';
-    appDetails.appendChild(appDescription);
 
     const appCategory = document.createElement('div');
     appCategory.classList.add('app-category');
@@ -99,6 +108,13 @@ function createAppCard(app, appDisplay) {
     appVersion.classList.add('app-version');
     appVersion.textContent = `Version: ${app.version || 'N/A'} (Updated: ${app.versionDate || 'Unknown Date'})`;
     appDetails.appendChild(appVersion);
+
+    if (app.screenshotURLs && app.screenshotURLs.length > 0) {
+        const screenshot = document.createElement('img');
+        screenshot.src = app.screenshotURLs[0];
+        screenshot.style.width = '100px';  // Adjust size as needed
+        appDetails.appendChild(screenshot);
+    }
 
     const downloadLink = document.createElement('a');
     downloadLink.href = app.downloadURL;
