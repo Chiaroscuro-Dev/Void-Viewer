@@ -26,7 +26,6 @@ You can access the live version of this project at **[https://void.zigwangles.xy
 
 ## Project Structure
 
-```plaintext
 ├── index.html        # Main webpage layout.
 ├── styles.css        # Styling for the webpage.
 ├── script.js         # JavaScript for handling file uploads, URL fetching, and .ipa file detection.
