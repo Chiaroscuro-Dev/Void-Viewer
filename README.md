@@ -28,8 +28,7 @@ You can access the live version of this project at **[https://void.zigwangles.xy
 
 ├── index.html        # Main webpage layout.
 ├── styles.css        # Styling for the webpage.
-├── script.js         # JavaScript for handling file uploads, URL fetching, and .ipa file detection.
-└── README.md         # Project documentation. ```
+└── script.js         # JavaScript for handling file uploads, URL fetching, and .ipa file detection.
 
 ## How It Works
 
