@@ -21,18 +21,21 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
     }
 });
 
-// Function to load a repository from a URL using CORS proxy
+// Function to load a repository from a URL (without CORS proxy)
 document.getElementById('loadFromUrl').addEventListener('click', function() {
     const url = document.getElementById('urlInput').value;
     if (url) {
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-
-        fetch(proxyUrl)
-            .then(response => response.json())
+        // Direct fetch from the URL (e.g., raw GitHub URLs)
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                const jsonData = JSON.parse(data.contents);
                 const repoName = extractRepoNameFromURL(url);
-                allRepositories.push({ name: repoName, apps: jsonData.apps || [] });
+                allRepositories.push({ name: repoName, apps: data.apps || [] });
                 displayApps(getAllApps());
                 populateCategoryFilter();
             })
