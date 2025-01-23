@@ -39,21 +39,13 @@ function handleJsonData(data) {
     const appDisplay = document.getElementById('appDisplay');
     appDisplay.innerHTML = '';  // Clear previous content
 
-    // Handle case where data is an array (multiple apps)
-    if (Array.isArray(data)) {
-        data.forEach(app => {
-            createAppCard(app, appDisplay);
+    // Check if the JSON contains an "apps" array
+    if (Array.isArray(data.apps)) {
+        data.apps.forEach(app => {
+            createAppCard(app, appDisplay);  // Display each app in the "apps" array
         });
-    } 
-    // Handle case where there's a single app object with versions
-    else if (data.versions && Array.isArray(data.versions)) {
-        // Display each version as a separate card
-        data.versions.forEach(version => {
-            createAppCard({ ...data, ...version }, appDisplay);  // Merge app metadata with version details
-        });
-    } 
-    // Handle single app with no versions
-    else {
+    } else {
+        // If no "apps" array, check if it's just a single app object
         createAppCard(data, appDisplay);
     }
 }
@@ -71,7 +63,7 @@ function createAppCard(app, appDisplay) {
 
     const appTitle = document.createElement('div');
     appTitle.classList.add('app-title');
-    appTitle.textContent = app.name || app.title || 'Unknown App';
+    appTitle.textContent = app.name || 'Unknown App';
     appDetails.appendChild(appTitle);
 
     const appSubtitle = document.createElement('div');
@@ -86,7 +78,7 @@ function createAppCard(app, appDisplay) {
 
     const appDescription = document.createElement('div');
     appDescription.classList.add('app-description');
-    appDescription.textContent = app.description || app.localizedDescription || 'No description available';
+    appDescription.textContent = app.description || 'No description available';
     appDetails.appendChild(appDescription);
 
     const appCategory = document.createElement('div');
